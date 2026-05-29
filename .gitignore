@@ -40,3 +40,8 @@ __screenshots__/
 
 test-results/
 playwright-report/
+
+# Local SQLite database files
+*.db
+*.sqlite
+*.sqlite3

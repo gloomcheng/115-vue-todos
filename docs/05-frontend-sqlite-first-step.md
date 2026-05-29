@@ -216,11 +216,22 @@ Data source: Persistent browser SQLite
 
 這代表資料不是只存在 Vue memory，也不是只存在 SQLite memory，而是被保存到了 IndexedDB。
 
-## 會產生 .sqlite 檔案嗎？
+## 持久化資料庫和 .gitignore
 
-不會。
+這一章已經把 SQLite 從 in-memory 改成持久化資料庫。
 
-目前的 SQLite database 是存在瀏覽器的 IndexedDB，不會在專案資料夾產生：
+目前做法是：
+
+```txt
+SQLite database
+  -> db.export()
+  -> Uint8Array
+  -> IndexedDB
+```
+
+所以資料會留在同一個瀏覽器裡，refresh 後不會消失。
+
+但這個 browser SQLite 不會在專案資料夾產生：
 
 ```txt
 todos.sqlite
@@ -228,15 +239,33 @@ dev.db
 *.sqlite
 ```
 
-所以這一章還不需要修改 `.gitignore`。
+即使如此，這一章仍然要補 `.gitignore`，因為這是 database 課很重要的安全觀念：
 
-之後如果改成 Node 或後端 SQLite，真的在專案裡產生 `.db` 檔案，才需要加入：
+> 持久化資料庫保存的是資料，不只是程式碼。資料庫檔案很可能包含使用者輸入、測試資料、個人資料或敏感內容，不應該被 commit 到 git。
+
+`.gitignore` 會加入：
 
 ```gitignore
 *.db
 *.sqlite
 *.sqlite3
 ```
+
+請注意：
+
+- 目前 browser SQLite 存在 IndexedDB，不會產生 repo 裡的 `.db` 檔
+- 但只要哪一天改成檔案型 SQLite，`.db` / `.sqlite` 就是 runtime data
+- runtime data 不等於 source code
+- database file 可能包含不該公開的資料
+
+如果某天真的需要提供範例資料，應該 commit 的通常是：
+
+- schema 檔
+- seed script
+- migration
+- 小型範例 SQL
+
+而不是每個人本機產生的 `.db` 檔。
 
 ## 檢查自己是否理解
 
